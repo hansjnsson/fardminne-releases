@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Färdminne — resan blir tre filmer, utan tidslinje</title>
+<meta name="description" content="Färdminne förvandlar råmaterialet från en resa till tre färdiga filmer. Allt sker lokalt på din dator — ingen tidslinje, inget konto, inget moln.">
+<meta property="og:title" content="Färdminne">
+<meta property="og:description" content="Råmaterialet från resan blir tre färdiga filmer. Utan att du någonsin ser en tidslinje.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23141D26'/%3E%3Cpath d='M7 22 Q12 10 16 15 T25 9' stroke='%23E8A33D' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='7' cy='22' r='2.5' fill='%235FA8A0'/%3E%3Ccircle cx='25' cy='9' r='2.5' fill='%235FA8A0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Design tokens — docs/05, samma värden som appens DesignTokens.ts */
+  :root {
+    --bg: #141D26;
+    --surface: #1D2A36;
+    --surface-raised: #27384A;
+    --ink: #EDE6D9;
+    --ink-muted: #8FA0AE;
+    --signal: #E8A33D;
+    --keep: #5FA8A0;
+    --line: #27384A;
+    --on-signal: #1B1200;
+    --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --font-body: "Inter Tight", "Segoe UI", system-ui, sans-serif;
+    --font-data: "IBM Plex Mono", Consolas, "Courier New", monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #F7F5F0;
+      --surface: #FFFFFF;
+      --surface-raised: #EFEBE3;
+      --ink: #16212B;
+      --ink-muted: #54677A;
+      --signal: #9A5A0F;
+      --keep: #2E7D74;
+      --line: #DFDAD1;
+      --on-signal: #FFFFFF;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--keep); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .measure { max-width: 720px; }
+
+  /* ————— Hero ————— */
+  header { position: relative; overflow: hidden; }
+  .topo {
+    position: absolute; inset: 0; z-index: 0;
+    opacity: 0.5; pointer-events: none;
+  }
+  .hero {
+    position: relative; z-index: 1;
+    padding: 120px 0 80px;
+  }
+  .hero .eyebrow {
+    font-family: var(--font-data);
+    font-size: 13px;
+    color: var(--ink-muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(44px, 8vw, 76px);
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+    margin-bottom: 24px;
+  }
+  .hero .tagline {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(20px, 3vw, 28px);
+    line-height: 1.35;
+    max-width: 640px;
+    margin-bottom: 16px;
+  }
+  .hero .sub {
+    color: var(--ink-muted);
+    max-width: 560px;
+    margin-bottom: 40px;
+  }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 12px;
+    height: 56px; padding: 0 32px;
+    background: var(--signal);
+    color: var(--on-signal);
+    font-family: var(--font-body);
+    font-weight: 600; font-size: 16px;
+    border-radius: 999px;
+    transition: transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .cta:hover { text-decoration: none; transform: translateY(-2px); }
+  .cta svg { flex: none; }
+  .cta-meta {
+    display: block;
+    margin-top: 16px;
+    font-family: var(--font-data);
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+
+  /* ————— Sektioner ————— */
+  section { padding: 80px 0; }
+  section + section { border-top: 1px solid var(--line); }
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(26px, 4vw, 36px);
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .lede { color: var(--ink-muted); max-width: 640px; margin-bottom: 40px; }
+  p + p { margin-top: 12px; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .card .step {
+    font-family: var(--font-data);
+    font-size: 13px;
+    color: var(--keep);
+    margin-bottom: 8px;
+  }
+  .card h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .card p { color: var(--ink-muted); font-size: 15px; }
+
+  /* Integritetslistan */
+  .checks { list-style: none; max-width: 720px; }
+  .checks li {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 14px 0;
+  }
+  .checks li + li { border-top: 1px solid var(--line); }
+  .checks .tick {
+    flex: none; width: 22px; height: 22px; margin-top: 2px;
+    border-radius: 999px;
+    background: var(--keep);
+    display: grid; place-items: center;
+  }
+  .checks .tick svg { display: block; }
+  .checks strong { display: block; font-weight: 600; }
+  .checks span { color: var(--ink-muted); font-size: 15px; }
+
+  /* Tre versioner */
+  .versions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .version {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .version .len {
+    font-family: var(--font-data);
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+  .version h3 { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+  .version p { color: var(--ink-muted); font-size: 15px; }
+  .version .bar { height: 6px; border-radius: 3px; background: var(--keep); margin-bottom: 16px; }
+  .version:nth-child(1) .bar { width: 22%; }
+  .version:nth-child(2) .bar { width: 55%; }
+  .version:nth-child(3) .bar { width: 100%; }
+
+  /* Detaljrutnät */
+  .details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px 40px;
+  }
+  .details h3 { font-family: var(--font-display); font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .details p { color: var(--ink-muted); font-size: 15px; }
+
+  /* Ärligt läge */
+  .honest {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 32px;
+    max-width: 720px;
+  }
+  .honest h2 { font-size: 24px; }
+  .honest p { color: var(--ink-muted); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 40px 0 56px;
+    color: var(--ink-muted);
+    font-size: 14px;
+  }
+  footer .foot { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+  @media (max-width: 600px) {
+    .hero { padding: 80px 0 56px; }
+    section { padding: 56px 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <!-- Topografiska konturer + en färdväg — appens referensvärld, ritad i stället för skärmdumpar -->
+  <svg class="topo" viewBox="0 0 1200 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="var(--line)" stroke-width="1.2">
+      <path d="M-50 480 C 150 420, 260 500, 420 440 S 700 360, 900 420 S 1150 500, 1300 440"/>
+      <path d="M-50 430 C 160 370, 280 450, 440 390 S 720 310, 920 370 S 1160 450, 1300 390"/>
+      <path d="M-50 380 C 180 320, 300 400, 460 340 S 740 260, 940 320 S 1170 400, 1300 340"/>
+      <path d="M-50 330 C 200 280, 330 350, 490 295 S 760 215, 960 275 S 1180 350, 1300 295"/>
+      <path d="M-50 280 C 230 240, 360 300, 520 250 S 780 175, 980 230 S 1190 300, 1300 250"/>
+      <path d="M700 120 C 780 90, 860 130, 930 100 S 1080 60, 1180 95"/>
+      <path d="M740 165 C 820 135, 890 175, 960 145 S 1100 105, 1200 140"/>
+    </g>
+    <g>
+      <path d="M180 470 C 300 380, 420 430, 540 330 S 760 220, 900 260 S 1060 200, 1130 130"
+            fill="none" stroke="var(--keep)" stroke-width="2" stroke-dasharray="1 9" stroke-linecap="round"/>
+      <circle cx="180" cy="470" r="5" fill="var(--keep)"/>
+      <circle cx="540" cy="330" r="4" fill="var(--keep)"/>
+      <circle cx="900" cy="260" r="4" fill="var(--keep)"/>
+      <circle cx="1130" cy="130" r="5" fill="var(--keep)"/>
+    </g>
+  </svg>
+
+  <div class="wrap hero">
+    <p class="eyebrow">WINDOWS · GRATIS · ALLT LOKALT PÅ DIN DATOR</p>
+    <h1>Färdminne</h1>
+    <p class="tagline">Råmaterialet från resan blir tre färdiga filmer. Utan att du någonsin ser en tidslinje.</p>
+    <p class="sub">Peka ut mappen med bilder och video. Färdminne läser, sorterar och ställer frågorna — du svarar. Ur svaren växer en kort film, en lång och en komplett.</p>
+    <a class="cta" id="download" href="https://github.com/hansjnsson/fardminne-releases/releases/latest">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+        <path d="M9 2v9M5.5 8 9 11.5 12.5 8M3 15h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Hämta Färdminne för Windows
+    </a>
+    <span class="cta-meta" id="download-meta">Windows 10/11 · uppdaterar sig själv · inget konto</span>
+  </div>
+</header>
+
+<main>
+  <section id="hur">
+    <div class="wrap">
+      <h2>Tre steg, inga verktygsfält</h2>
+      <p class="lede">De flesta program för film ger dig en tidslinje och önskar lycka till. Färdminne gör tvärtom: det ställer frågorna och räknar ut det exakta.</p>
+      <div class="cards">
+        <div class="card">
+          <p class="step">STEG 1</p>
+          <h3>Peka ut mappen</h3>
+          <p>Bilder och video från flera personer och flera kameror, precis som de ligger. Mappen läses men rörs aldrig — inget döps om, inget flyttas, inget raderas.</p>
+        </div>
+        <div class="card">
+          <p class="step">STEG 2</p>
+          <h3>Svara på frågorna</h3>
+          <p>Vilka dagar hör till resan, vilka bilder ska vara med, vilken musik passar. En fråga i taget, med miniatyrer att välja bland. Ingen redigering, inga spår att dra i.</p>
+        </div>
+        <div class="card">
+          <p class="step">STEG 3</p>
+          <h3>Filmen blir klar</h3>
+          <p>Titelkort, kartor över färdvägen, mjuka övergångar och musik — allt sätts samman av maskinen. En riktig MP4 hamnar i din videomapp.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="versioner">
+    <div class="wrap">
+      <h2>En resa, tre filmer</h2>
+      <p class="lede">Samma material och samma svar ger tre längder — utan extra arbete. Den som ska se två minuter behöver inte se fyrtio.</p>
+      <div class="versions">
+        <div class="version">
+          <div class="bar"></div>
+          <p class="len">ATT SKICKA</p>
+          <h3>Kort</h3>
+          <p>Höjdpunkterna. Filmen som får plats i ett meddelande och ses till slutet.</p>
+        </div>
+        <div class="version">
+          <div class="bar"></div>
+          <p class="len">ATT VISA</p>
+          <h3>Lång</h3>
+          <p>Berättelsen. Filmen för soffan, med plats för platserna och dagarna emellan.</p>
+        </div>
+        <div class="version">
+          <div class="bar"></div>
+          <p class="len">ATT SPARA</p>
+          <h3>Komplett</h3>
+          <p>Arkivet. Allt du valde, i ordning — för den som vill minnas hela resan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="integritet">
+    <div class="wrap">
+      <h2>Dina bilder stannar hos dig</h2>
+      <p class="lede">Integriteten är inbyggd i hur programmet är konstruerat, inte ett löfte i ett avtal.</p>
+      <ul class="checks">
+        <li>
+          <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5 4.8 9 10 3.5" stroke="var(--bg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><strong>Video och originalfiler lämnar aldrig datorn</strong>
+          <span>All analys och all filmskapning sker lokalt. Det enda som någonsin kan skickas är nedskalade enstaka bildrutor och text — och bara om du använder dialogens AI-hjälp.</span></div>
+        </li>
+        <li>
+          <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5 4.8 9 10 3.5" stroke="var(--bg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><strong>Kartorna ritas offline</strong>
+          <span>Färdvägen ritas ur geografi som följer med programmet — inga kartservrar ser var du har varit. Ortnamn slås upp med avrundad position, aldrig exakta koordinater.</span></div>
+        </li>
+        <li>
+          <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5 4.8 9 10 3.5" stroke="var(--bg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><strong>Din mapp skrivs aldrig i</strong>
+          <span>Mappen du pekar ut läses, punkt. Ligger den i iCloud eller OneDrive förblir den exakt som den var.</span></div>
+        </li>
+        <li>
+          <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5 4.8 9 10 3.5" stroke="var(--bg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><strong>Inget raderas, ingenting glöms</strong>
+          <span>Väljer du bort en bild är den bortvald, inte borta. Varje beslut går att ångra, även långt senare.</span></div>
+        </li>
+        <li>
+          <span class="tick"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5 4.8 9 10 3.5" stroke="var(--bg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><strong>Inget konto, ingen prenumeration</strong>
+          <span>Ladda ner, installera, börja. Programmet är gratis och behöver ingen inloggning.</span></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="detaljer">
+    <div class="wrap">
+      <h2>Byggt för verkligt material</h2>
+      <p class="lede">Semesterbilder är stökiga: 79 HEIC från en iPhone, video som ligger på sidan, samma solnedgång fem gånger. Färdminne är byggt och testat mot precis sådant.</p>
+      <div class="details">
+        <div>
+          <h3>Telefonen skickar direkt till datorn</h3>
+          <p>Skanna en QR-kod så går bilderna över ditt wifi rakt in i resan — ingen kabel, ingen molntjänst emellan.</p>
+        </div>
+        <div>
+          <h3>Nästan likadana bilder gallras</h3>
+          <p>Fem tagningar av samma vy blir den bästa av dem. De andra finns kvar och kan hämtas tillbaka med ett klick.</p>
+        </div>
+        <div>
+          <h3>Stora bildbibliotek går att använda</h3>
+          <p>Materialet kan begränsas till resans egna dagar, så hela bildmappen med tusentals filer fungerar som utgångspunkt.</p>
+        </div>
+        <div>
+          <h3>Musik följer med</h3>
+          <p>Nio spår i fyra stämningar ingår, med licens för dina filmer. Egna ljudfiler fungerar precis lika bra.</p>
+        </div>
+        <div>
+          <h3>iPhone-format utan krångel</h3>
+          <p>HEIC-bilder, stående video och rumsligt ljud hanteras som de ska — det som brukar bli fel i andra program.</p>
+        </div>
+        <div>
+          <h3>Ta med dig urvalet vidare</h3>
+          <p>Vill du finputsa i ett riktigt videoprogram exporterar Färdminne ditt urval till Final Cut-format.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="laege">
+    <div class="wrap">
+      <div class="honest">
+        <h2>Ärligt om läget</h2>
+        <p>Färdminne är i tidig version och byggs av en person. Hela kedjan — mapp in, tre filmer ut — fungerar i dag, helt på din dator. Det som kommer härnäst är en dialog som förstår vad bilderna föreställer och kan ställa klokare frågor.</p>
+        <p>Programmet uppdaterar sig själv, så det du hämtar i dag växer i takt med att det byggs.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>Färdminne byggs i Sverige. Dina bilder är dina.</span>
+    <span><a href="https://github.com/hansjnsson/fardminne-releases/releases">Alla versioner och versionsnyheter</a></span>
+  </div>
+</footer>
+
+<script>
+  // Hämta senaste versionen från releaserepot så knappen alltid pekar rätt.
+  // Faller tillbaka på releasesidan om anropet inte går fram.
+  (async () => {
+    try {
+      const res = await fetch("https://api.github.com/repos/hansjnsson/fardminne-releases/releases/latest");
+      if (!res.ok) return;
+      const rel = await res.json();
+      const exe = (rel.assets || []).find((a) => /\.exe$/.test(a.name));
+      if (exe) document.getElementById("download").href = exe.browser_download_url;
+      const version = String(rel.tag_name || "").replace(/^v/, "");
+      if (version) {
+        document.getElementById("download-meta").textContent =
+          `Version ${version} · Windows 10/11 · uppdaterar sig själv · inget konto`;
+      }
+    } catch {
+      /* releasesidan duger som reserv */
+    }
+  })();
+</script>
+
+</body>
+</html>
